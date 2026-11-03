@@ -40,13 +40,13 @@ Ejecutar los comandos desde la raíz del proyecto. Para la integración manual s
 **Terminal 1 — Servidor**
 
 ```bash
-python singletonproxyobserver.py -p 8080 -v
+python singletonproxyobserver.py -p 8080
 ```
 
 **Terminal 2 — Observer**
 
 ```bash
-python observerclient.py -s localhost -p 8080 -o observer_output.json --retry 3 -v
+python observerclient.py -s localhost -p 8080 -o observer_output.json --retry 3
 ```
 
 **Terminal 3 — Cliente**
@@ -54,12 +54,18 @@ python observerclient.py -s localhost -p 8080 -o observer_output.json --retry 3 
 Antes de ejecutar, reemplazar `REEMPLAZAR_POR_UUID_CPU` en los JSON de `examples/` con el identificador emitido por `python evidence/IS2-TPFI-uuid.py`. Configurar también IDs y datos válidos para el entorno de prueba.
 
 ```bash
-python singletonclient.py -i examples/list.json -s localhost -p 8080 -v
-python singletonclient.py -i examples/get.json -s localhost -p 8080 -v
-python singletonclient.py -i examples/set.json -s localhost -p 8080 -v
+python singletonclient.py -i examples/list.json -s localhost -p 8080
+python singletonclient.py -i examples/get.json -s localhost -p 8080
+python singletonclient.py -i examples/set.json -s localhost -p 8080
 ```
 
 Después de `set`, el Observer debe recibir una notificación JSON. Las operaciones registran auditoría en `CorporateLog`.
+
+La demostración con AWS es manual: preparar GET y SET con el ID de un registro propio; SET modifica ese registro y cada operación audita en CorporateLog. El script de calidad usa dobles de prueba y no ejecuta esta demostración.
+
+Las tres terminales muestran INFO sin `-v`, con prefijos `[SERVER]`, `[CLIENT]` y `[OBSERVER]`. `-v` habilita DEBUG para `tpfi`; Boto3, Botocore, urllib3 y s3transfer quedan en WARNING. Los mensajes van a stderr; el cliente conserva exclusivamente la respuesta JSON en stdout. El Observer imprime cada JSON inmediatamente y oculta campos sensibles habituales (password, secret, token, credenciales). No usar secretos como ID, UUID ni datos del registro de demostración.
+
+El servidor identifica acción, UUID e ID, confirma la auditoría sólo después de escribir CorporateLog y muestra las notificaciones entregadas por TCP. Ese número no confirma lectura por la aplicación remota. El contador representa suscripciones registradas: las desconexiones de Observers se detectan al fallar un envío, sin agregar heartbeats ni cambiar el protocolo.
 
 ### Demostración de la caída del servidor
 
@@ -75,6 +81,20 @@ Sin detener la Terminal 1, abrir una cuarta terminal y ejecutar `python singleto
 
 ## Pruebas, cobertura y calidad
 
+Ejecutar todos los controles con el Python de `.venv`, sin activar el entorno ni instalar dependencias:
+
+```powershell
+.\scripts\run_quality.ps1
+```
+
+Desde otra ubicación, invocar la ruta absoluta del script. Si la política de PowerShell exige firma, puede usarse una excepción sólo para el proceso:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_quality.ps1
+```
+
+En Linux: `bash scripts/run_quality.sh`. Ambos scripts ubican la raíz por su propia ruta, requieren `.venv`, ejecutan pytest con cobertura, Black, Ruff, Mypy, Pyright, Bandit y pdoc, continúan tras fallos y muestran PASS/FAIL con códigos de salida. Devuelven 1 si falla cualquier control; 0 si pasan todos. No instalan dependencias ni modifican el entorno virtual.
+
 ```bash
 python -m pytest
 black --check .
@@ -84,7 +104,9 @@ pyright src/tpfi
 bandit -r src/tpfi
 ```
 
-Las pruebas usan implementaciones falsas de DynamoDB y bloquean la lectura de credenciales y las llamadas AWS. El umbral obligatorio configurado de cobertura es 85%. En la revisión local del 3/11/2026: **41 pruebas aprobadas, cobertura de líneas 93,73%** (Python 3.14.3). Black, Ruff, Mypy, Pyright y Bandit forman parte de los controles locales y de CI.
+Las pruebas usan implementaciones falsas de DynamoDB y bloquean la lectura de credenciales y las llamadas AWS. El umbral obligatorio configurado de cobertura es 85%. En la revisión local del 3/11/2026: **56 pruebas aprobadas, cobertura de líneas 97,64%** (Python 3.14.3). Los siete controles aprobaron al invocar el script desde otra carpeta. Se comprobó también que una falla de pytest no impide ejecutar los seis controles restantes y devuelve código 1.
+
+pdoc generó los HTML con código 0; la versión instalada advierte sobre resolución de anotaciones `ForwardRef` con Python 3.14. No se cambió el entorno virtual para ocultar esas advertencias. CI usa Python 3.11 y ejecuta el mismo script Linux en una `.venv` propia.
 
 ## Documentación y CI
 

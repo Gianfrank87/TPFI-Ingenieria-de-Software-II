@@ -14,3 +14,5 @@ Se utilizó ChatGPT como apoyo para interpretar la consigna, proponer una estruc
 Las decisiones finales, ejecución en el entorno AWS provisto y evidencias de integración deben ser verificadas por el alumno.
 
 En la preparación de la entrega se utilizó Codex para auditar archivos publicables, revisar exclusiones de Git, ejecutar pruebas y controles de calidad y preparar GitHub Actions. Se preservó la lógica funcional de conexión a DynamoDB y no se ejecutaron operaciones sobre las tablas reales.
+
+El 3/11/2026 se solicitó a Codex mejorar la observabilidad de las tres terminales para la defensa oral, unificar los siete controles de calidad y agregar regresiones. Se conservaron los gateways DynamoDB y el Proxy, se añadieron eventos posteriores a confirmaciones reales y se documentaron los límites del contador de suscripciones y de la entrega TCP. Las pruebas usan sockets locales, mocks y gateways falsos; se preservó la configuración AWS. Se preparó la rama `fix/logging-defensa` para revisión por Pull Request, sin merge automático.

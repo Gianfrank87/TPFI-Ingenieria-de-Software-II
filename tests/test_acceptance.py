@@ -56,7 +56,7 @@ def test_singleton_client_handles_server_down(
 
     monkeypatch.setattr(client, "request_server", fail)
     assert client.main(["-i", str(source)]) == 1
-    assert "server down" in capsys.readouterr().err
+    assert json.loads(capsys.readouterr().err) == {"Error": "OSError"}
 
 
 def test_second_server_cannot_bind_same_port() -> None:
