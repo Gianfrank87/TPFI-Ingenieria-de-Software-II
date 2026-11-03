@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - run: pip install -e .
+      - run: black --check .
+      - run: ruff check .
+      - run: mypy src/tpfi
+      - run: pyright src/tpfi
+      - run: bandit -r src/tpfi
+      - run: pytest
+      - run: pdoc -o docs/html tpfi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: documentation-html
+          path: docs/html/
+          if-no-files-found: error

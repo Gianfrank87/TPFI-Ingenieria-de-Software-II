@@ -1,0 +1,10 @@
+{
+    "UUID":  "REEMPLAZAR_POR_UUID_CPU",
+    "DATA":  {
+                 "localidad":  "Concepcion del Uruguay",
+                 "sede":  "FCyT",
+                 "nombre":  "Registro de ejemplo"
+             },
+    "ID":  "REGISTRO-DE-EJEMPLO",
+    "ACTION":  "set"
+}

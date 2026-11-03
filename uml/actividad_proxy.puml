@@ -1,0 +1,20 @@
+@startuml
+start
+:Recibir JSON;
+:Validar UUID y ACTION;
+if (ACTION?) then (get)
+  :Validar ID;
+  :Proxy -> Singleton CorporateData.get;
+elseif (set)
+  :Validar ID y datos;
+  :Proxy -> Singleton CorporateData.set;
+else (list)
+  :Proxy -> Singleton CorporateData.list_all;
+endif
+:Registrar CorporateLog;
+:Responder JSON;
+if (ACTION = set?) then (sí)
+  :Notificar Observers;
+endif
+stop
+@enduml

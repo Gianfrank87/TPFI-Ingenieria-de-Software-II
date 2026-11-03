@@ -1,0 +1,10 @@
+@startuml
+[*] --> Desconectado
+Desconectado --> Conectando : iniciar/reintentar
+Conectando --> Suscripto : conexión OK + subscribe
+Conectando --> Espera : error
+Espera --> Conectando : timeout 30 s
+Suscripto --> Suscripto : recibir notificación set
+Suscripto --> Espera : socket interrumpido
+Suscripto --> [*] : cancelación manual
+@enduml

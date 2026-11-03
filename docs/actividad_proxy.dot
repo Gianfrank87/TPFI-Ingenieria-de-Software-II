@@ -1,0 +1,35 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.3, nodesep=0.35, ranksep=0.45, label="Diagrama UML de actividad - Proxy get / set / list", labelloc=t, fontsize=18];
+  node [shape=box, style="rounded", fontname="Arial", fontsize=11, margin="0.14,0.08"];
+  edge [fontname="Arial", fontsize=10];
+  inicio [shape=circle, label="", width=0.22, style=filled];
+  fin [shape=doublecircle, label="", width=0.25];
+  recibir [label="Recibir solicitud JSON"];
+  uuid [shape=diamond, label="¿UUID presente?"];
+  accion [shape=diamond, label="ACTION"];
+  id [shape=diamond, label="¿ID presente?"];
+  get [label="Proxy → Singleton CorporateData\nget(ID)"];
+  set [label="Proxy → Singleton CorporateData\nset(ID, DATA)"];
+  list [label="Proxy → Singleton CorporateData\nlist_all()"];
+  log [label="Registrar acción en\nCorporateLog"];
+  notify [label="Observer.notify()\na suscriptores"];
+  respuesta [label="Enviar respuesta JSON"];
+  error [label="Enviar Error JSON"];
+  inicio -> recibir -> uuid;
+  uuid -> error [label="no"];
+  uuid -> accion [label="sí"];
+  accion -> id [label="get / set"];
+  accion -> list [label="list"];
+  accion -> error [label="otra"];
+  id -> error [label="no"];
+  id -> get [label="sí, get"];
+  id -> set [label="sí, set"];
+  get -> log;
+  list -> log;
+  set -> log;
+  log -> respuesta [label="get / list"];
+  log -> notify [label="set"];
+  notify -> respuesta;
+  respuesta -> fin;
+  error -> fin;
+}

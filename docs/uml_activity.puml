@@ -1,0 +1,33 @@
+@startuml
+start
+:Recibir JSON;
+if (UUID presente?) then (sí)
+  if (ACTION?) then (get)
+    if (ID presente?) then (sí)
+      :Proxy -> CorporateData Singleton.get(ID);
+      :Registrar CorporateLog;
+      :Responder registro/Error;
+    else (no)
+      :Registrar error;
+    endif
+  elseif (set)
+    if (ID presente?) then (sí)
+      :Proxy -> CorporateData Singleton.set(ID, DATA);
+      :Registrar CorporateLog;
+      :Responder registro actualizado;
+      :Observer.notify(actualización);
+    else (no)
+      :Registrar error;
+    endif
+  elseif (list)
+    :Proxy -> CorporateData Singleton.list_all();
+    :Registrar CorporateLog;
+    :Responder array JSON;
+  else (inválida)
+    :Registrar error;
+  endif
+else (no)
+  :Responder falta UUID;
+endif
+stop
+@enduml

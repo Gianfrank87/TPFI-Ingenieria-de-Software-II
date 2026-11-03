@@ -1,0 +1,19 @@
+digraph G {
+  graph [rankdir=LR, bgcolor="white", pad=0.35, nodesep=0.6, ranksep=0.5, label="Diagrama UML de estados - ObserverClient", labelloc=t, fontsize=18];
+  node [shape=ellipse, fontname="Arial", fontsize=11, margin="0.16,0.08"];
+  edge [fontname="Arial", fontsize=10];
+  inicio [shape=circle, label="", width=0.22, style=filled];
+  fin [shape=doublecircle, label="", width=0.25];
+  desconectado [label="Desconectado"];
+  conectando [label="Conectando"];
+  suscripto [label="Suscripto"];
+  espera [label="Espera\n(reintento)"];
+  inicio -> desconectado;
+  desconectado -> conectando [label="iniciar"];
+  conectando -> suscripto [label="conexión OK + subscribe"];
+  conectando -> espera [label="error"];
+  espera -> conectando [label="30 s"];
+  suscripto -> suscripto [label="notificación set"];
+  suscripto -> espera [label="socket interrumpido"];
+  suscripto -> fin [label="cancelación manual"];
+}

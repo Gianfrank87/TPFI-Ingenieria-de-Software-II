@@ -1,0 +1,10 @@
+boto3>=1.35,<2
+botocore>=1.35,<2
+pytest>=8,<9
+pytest-cov>=5,<7
+black>=24,<26
+ruff>=0.7,<1
+mypy>=1.13,<2
+pyright>=1.1,<2
+bandit>=1.7,<2
+pdoc>=15,<16
