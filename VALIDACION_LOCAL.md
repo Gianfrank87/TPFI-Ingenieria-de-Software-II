@@ -69,7 +69,7 @@ Criterios de aceptación:
 - pyright: sin errores.
 - bandit: sin observaciones de seguridad en alcance.
 
-Resultado local del 3/11/2026 (Python 3.14.3): 56 tests aprobados, cobertura 97,64%; Black, Ruff, Mypy, Pyright, Bandit y pdoc PASS. Se ejecutó el script desde `scripts/` para verificar la independencia del directorio actual. pdoc generó los HTML con advertencias de compatibilidad `ForwardRef` en Python 3.14; no se actualizaron dependencias. CI ejecuta el script Linux con Python 3.11. No se revalidó la integración AWS real en esta intervención.
+Resultado local del 3/11/2026 (Python 3.14.3): 56 tests aprobados, cobertura 97,64%; Black, Ruff, Mypy, Pyright, Bandit y pdoc PASS. Se ejecutó el script desde `scripts/` para verificar la independencia del directorio actual. El 4/11/2026 se actualizó pdoc a 16 con autorización del usuario para resolver `ForwardRef` con Python 3.14 y se configuró la cobertura sobre `src/tpfi` para evitar la importación exploratoria prematura. No se filtran advertencias. CI ejecuta el script Linux con Python 3.11. No se revalidó la integración AWS real en esta intervención.
 
 ## 4. Prueba de integración manual
 

@@ -7,7 +7,7 @@ if (-not (Test-Path -LiteralPath $pythonPath)) {
 }
 $PSNativeCommandUseErrorActionPreference = $false
 $checks = @(
-    @{ Name = 'Pytest + coverage'; Args = @('pytest', '--cov=tpfi', '--cov-report=term-missing', '--cov-fail-under=85') },
+    @{ Name = 'Pytest + coverage'; Args = @('pytest', '--cov=src/tpfi', '--cov-report=term-missing', '--cov-fail-under=85') },
     @{ Name = 'Black'; Args = @('black', '--check', '.') },
     @{ Name = 'Ruff'; Args = @('ruff', 'check', '.') },
     @{ Name = 'Mypy'; Args = @('mypy', 'src/tpfi') },

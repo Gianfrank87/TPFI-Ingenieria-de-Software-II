@@ -1,5 +1,11 @@
 # Changelog
 
+## Sin publicar - 2026-11-04
+
+- pdoc 16 para compatibilidad de anotaciones con Python 3.14.
+- Cobertura medida sobre `src/tpfi` para evitar advertencias por importación exploratoria del paquete, conservando el alcance y umbral del 85%.
+- Corrección de las causas de las advertencias sin ocultar diagnósticos de las herramientas.
+
 ## Sin publicar - 2026-11-03
 
 - Eventos INFO en servidor, cliente y Observer para la defensa, con stderr separado del JSON y dependencias limitadas a WARNING; `-v` conserva DEBUG.

@@ -1,5 +1,7 @@
 # CONTEXT.md
 
+El 4/11/2026 se utilizó Codex para corregir las advertencias de pdoc y coverage observadas durante la validación local. El usuario autorizó explícitamente actualizar pdoc a la versión 16 dentro del entorno virtual existente. Se mantuvieron los diagnósticos visibles y el alcance de medición de cobertura, sin modificar AWS.
+
 ## Uso de herramienta de IA
 
 Se utilizó ChatGPT como apoyo para interpretar la consigna, proponer una estructura modular, revisar el código y preparar pruebas automatizadas.

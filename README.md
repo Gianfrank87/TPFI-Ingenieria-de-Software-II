@@ -106,7 +106,7 @@ bandit -r src/tpfi
 
 Las pruebas usan implementaciones falsas de DynamoDB y bloquean la lectura de credenciales y las llamadas AWS. El umbral obligatorio configurado de cobertura es 85%. En la revisión local del 3/11/2026: **56 pruebas aprobadas, cobertura de líneas 97,64%** (Python 3.14.3). Los siete controles aprobaron al invocar el script desde otra carpeta. Se comprobó también que una falla de pytest no impide ejecutar los seis controles restantes y devuelve código 1.
 
-pdoc generó los HTML con código 0; la versión instalada advierte sobre resolución de anotaciones `ForwardRef` con Python 3.14. No se cambió el entorno virtual para ocultar esas advertencias. CI usa Python 3.11 y ejecuta el mismo script Linux en una `.venv` propia.
+Se requiere pdoc 16 para resolver las anotaciones con Python 3.14. La cobertura mide la ruta `src/tpfi`, evitando la importación exploratoria del paquete antes de iniciar la medición. No se silencian advertencias ni se filtra la salida de las herramientas. CI usa Python 3.11 y ejecuta el mismo script Linux en una `.venv` propia.
 
 ## Documentación y CI
 

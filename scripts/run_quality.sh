@@ -19,7 +19,7 @@ run_check() {
     if (( code != 0 )); then status=FAIL; failed=1; fi
     results+=("$status - $name (exit $code)")
 }
-run_check 'Pytest + coverage' pytest --cov=tpfi --cov-report=term-missing --cov-fail-under=85
+run_check 'Pytest + coverage' pytest --cov=src/tpfi --cov-report=term-missing --cov-fail-under=85
 run_check Black black --check .
 run_check Ruff ruff check .
 run_check Mypy mypy src/tpfi
