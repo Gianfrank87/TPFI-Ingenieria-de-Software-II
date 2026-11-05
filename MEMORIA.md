@@ -1,8 +1,11 @@
 # Memoria del trabajo práctico final integrador
 
-**Asignatura:** Ingeniería de Software II  
-**Alumno:** Gian Moreyra  
-**Proyecto:** acceso a datos corporativos con Singleton, Proxy y Observer  
+**Asignatura:** Ingeniería de Software II
+
+**Alumno:** Gian Moreyra
+
+**Proyecto:** acceso a datos corporativos con Singleton, Proxy y Observer
+
 **Repositorio:** https://github.com/Gianfrank87/TPFI-Ingenieria-de-Software-II
 
 ## 1. Objetivo y alcance
