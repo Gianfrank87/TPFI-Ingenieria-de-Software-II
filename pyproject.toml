@@ -47,7 +47,7 @@ ignore = ["D203", "D213"]
 "tests/*" = ["D100", "D101", "D102", "D103", "D107"]
 
 [tool.pytest.ini_options]
-addopts = "-q --cov=tpfi --cov-report=term-missing --cov-fail-under=85"
+addopts = "-q --cov=src/tpfi --cov-report=term-missing --cov-fail-under=85"
 testpaths = ["tests"]
 
 [tool.mypy]

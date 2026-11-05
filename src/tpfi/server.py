@@ -10,12 +10,15 @@ import threading
 import uuid
 from typing import Any, cast
 
+from botocore.exceptions import BotoCoreError, ClientError
+
 from .aws_gateway import CorporateDataGateway, CorporateLogGateway
+from .logging_setup import configure_logging, safe_label
 from .observer import SubscriptionManager
 from .protocol import ProtocolError, recv_json, send_json
 from .proxy import CorporateDataProxy, DataGateway
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("tpfi.server")
 
 
 class LogGateway:
@@ -58,16 +61,17 @@ class ApplicationServer:
             server.bind((self.host, self.port))
             server.listen()
             server.settimeout(1.0)
-            LOGGER.info("Servidor escuchando en %s:%s", self.host, self.port)
+            LOGGER.info("Servidor escuchando en %s:%s", *server.getsockname())
             while not self._stop.is_set():
                 try:
                     client, address = server.accept()
                 except TimeoutError:
                     continue
-                LOGGER.debug("Conexión desde %s", address)
+                LOGGER.info("Cliente conectado: %s:%s", *address)
                 threading.Thread(
                     target=self.handle_client, args=(client,), daemon=True
                 ).start()
+        LOGGER.info("Servidor detenido")
 
     def stop(self) -> None:
         """Solicita la finalización del servidor."""
@@ -84,8 +88,15 @@ class ApplicationServer:
             action = str(request.get("ACTION", "")).strip().lower()
             session_id = str(request.get("SESSION") or uuid.uuid4())
             record_id = str(request.get("ID", "")).strip() or None
+            LOGGER.info(
+                "%s recibido: UUID=%s ID=%s",
+                safe_label(action.upper()),
+                safe_label(cpu_uuid),
+                safe_label(record_id),
+            )
 
             if not cpu_uuid:
+                LOGGER.info("Validación fallida: falta UUID")
                 send_json(client, {"status": "Error", "error": "Falta UUID"})
                 return
 
@@ -97,13 +108,24 @@ class ApplicationServer:
                     action="subscribe",
                     status="OK",
                 )
+                LOGGER.info(
+                    "CorporateLog: SUBSCRIBE registrado UUID=%s", safe_label(cpu_uuid)
+                )
                 send_json(client, {"status": "OK", "action": "subscribe"})
                 subscribed = True
+                LOGGER.info(
+                    "Suscripción validada y confirmada: UUID=%s", safe_label(cpu_uuid)
+                )
+                LOGGER.info(
+                    "Observer registrado; observadores registrados: %s",
+                    self.subscriptions.count,
+                )
                 return
 
             try:
                 result = self.proxy.execute(request)
             except (ValueError, KeyError) as exc:
+                LOGGER.info("Solicitud rechazada: %s", type(exc).__name__)
                 self.log_gateway.write(
                     cpu_uuid=cpu_uuid,
                     session_id=session_id,
@@ -111,15 +133,30 @@ class ApplicationServer:
                     record_id=record_id,
                     status="Error",
                 )
+                LOGGER.info(
+                    "CorporateLog: error registrado UUID=%s", safe_label(cpu_uuid)
+                )
                 send_json(client, {"status": "Error", "error": str(exc).strip("'\"")})
                 return
 
+            LOGGER.info(
+                "%s validado y ejecutado correctamente", safe_label(action.upper())
+            )
+            if action == "set":
+                LOGGER.info(
+                    "Registro modificado mediante SET: %s", safe_label(record_id)
+                )
             self.log_gateway.write(
                 cpu_uuid=cpu_uuid,
                 session_id=session_id,
                 action=action,
                 record_id=record_id,
                 status="OK",
+            )
+            LOGGER.info(
+                "CorporateLog: %s registrado UUID=%s",
+                safe_label(action.upper()),
+                safe_label(cpu_uuid),
             )
             response: dict[str, Any] = {
                 "status": "OK",
@@ -128,15 +165,27 @@ class ApplicationServer:
             }
             send_json(client, response)
             if action == "set" and isinstance(result, dict):
-                self.subscriptions.notify(
+                delivered = self.subscriptions.notify(
                     {"status": "OK", "action": "set", "data": result}
                 )
+                LOGGER.info(
+                    "Notificaciones entregadas por TCP: %s; "
+                    "observadores registrados: %s",
+                    delivered,
+                    self.subscriptions.count,
+                )
         except (ConnectionError, OSError, ProtocolError) as exc:
-            LOGGER.warning("Cliente finalizado: %s", exc)
+            LOGGER.warning("Error de comunicación/solicitud: %s", type(exc).__name__)
+        except (BotoCoreError, ClientError) as exc:
+            LOGGER.error(
+                "Error de acceso a datos o CorporateLog: %s", type(exc).__name__
+            )
         finally:
             if not subscribed:
+                self.subscriptions.unsubscribe(client)
                 with contextlib.suppress(OSError):
                     client.close()
+                LOGGER.info("Conexión de cliente cerrada")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -150,17 +199,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     """Punto de entrada del servidor."""
     args = build_parser().parse_args(argv)
-    logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
+    configure_logging("SERVER", args.verbose)
     server = ApplicationServer(port=args.port)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         LOGGER.info("Servidor detenido por usuario")
     except OSError as exc:
-        LOGGER.error("No se pudo iniciar el servidor: %s", exc)
+        LOGGER.error("No se pudo iniciar el servidor: %s", type(exc).__name__)
         return 1
     return 0
 

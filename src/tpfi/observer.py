@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import contextlib
+import logging
 import socket
 import threading
 from typing import Any
 
 from .protocol import send_json
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SubscriptionManager:
@@ -57,6 +60,7 @@ class SubscriptionManager:
                 failed.append(cpu_uuid)
         for cpu_uuid in failed:
             self.unsubscribe(cpu_uuid)
+            LOGGER.info("Observer desconectado: fallo al enviar; suscripción eliminada")
         return delivered
 
     @property

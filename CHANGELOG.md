@@ -1,5 +1,19 @@
 # Changelog
 
+## Sin publicar - 2026-11-04
+
+- pdoc 16 para compatibilidad de anotaciones con Python 3.14.
+- Cobertura medida sobre `src/tpfi` para evitar advertencias por importación exploratoria del paquete, conservando el alcance y umbral del 85%.
+- Corrección de las causas de las advertencias sin ocultar diagnósticos de las herramientas.
+
+## Sin publicar - 2026-11-03
+
+- Eventos INFO en servidor, cliente y Observer para la defensa, con stderr separado del JSON y dependencias limitadas a WARNING; `-v` conserva DEBUG.
+- Registro de conexiones, acción/UUID/ID, auditoría confirmada, suscripciones y envíos TCP; reconexión con confirmación del nuevo SUBSCRIBE.
+- Ocultamiento de campos sensibles del Observer y errores sin detalles de proveedores.
+- Scripts de calidad equivalentes para PowerShell y Linux: `.venv`, siete controles, continuación ante fallos, resumen y código de salida agregado.
+- Regresiones con gateways falsos, sin modificar operaciones DynamoDB, y procedimiento manual de defensa actualizado.
+
 ## 1.0.1 - 2026-11-03
 
 - Pruebas automatizadas del reintento de Observer y conflicto de puerto TCP.

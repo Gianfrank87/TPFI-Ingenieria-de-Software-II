@@ -35,3 +35,5 @@ junit*.xml
 *.jsonl
 observer_output*.json
 input_*.json
+comandos.json
+camino feliz.json
