@@ -2,6 +2,8 @@
 
 Proyecto integrador en Python: **Proxy, Singleton y Observer** mediante sockets TCP y AWS DynamoDB.
 
+La [memoria del trabajo](MEMORIA.md) presenta la arquitectura, los patrones, los resultados de validación y los límites de la solución.
+
 ## Estructura y patrones
 
 | Patrón | Implementación | Responsabilidad |
